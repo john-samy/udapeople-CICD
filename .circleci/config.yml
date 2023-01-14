@@ -1,97 +1,62 @@
 version: 2.1
 jobs:
-  build-frontend:
+  build_backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: Build front-end
-          command: |
-            # Your code here
-            cd frontend
-            npm install
-            npm run build
-      - save_cache:
-          paths: [frontend/node_modules]
-          key: frontend-build
+      - run: npm i --prefix backend
+      - run: npm run lint --prefix backend
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/backend/node_modules
 
-  build-backend:
+  build_frontend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Back-end build
-          command: |
-            cd backend
-            npm install
-            npm run build
-      - save_cache:
-          paths: [backend/node_modules]
-          key: backend-build
-  test-frontend:
-    docker:
-      - image: cimg/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: test front-end
-          command: |
-            # Your code here
-            cd frontend
-            npm install
-            npm test
+      - run: npm i --prefix frontend
+      - run: npm run lint --prefix frontend
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/frontend/node_modules
 
-  test-backend:
+  test_backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Back-end test
-          command: |
-            cd backend
-            npm install
-            npm test
-  scan-frontend:
-    docker:
-      - image: cimg/node:13.8.0
-    steps:
-      - checkout
-      - restore_cache:
-          keys: [frontend-build]
-      - run:
-          name: scan front-end
-          command: |
-            # Your code here
-            cd frontend
-            npm install
-            npm audit fix --audit-level=critical --force 
-            npm audit --audit-level=critical
+      - attach_workspace:
+          at: ~/
+      - run: npm i --prefix backend
+      - run: npm run test --prefix backend
 
-  scan-backend:
+  test_frontend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Back-end scan
-          command: |
-            cd backend
-            npm install
-            npm audit fix --audit-level=critical --force 
-            npm audit --audit-level=critical            
+      - attach_workspace:
+          at: ~/
+      - run: npm i --prefix frontend
+      - run: npm run test --prefix frontend
+
+  analyze_backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: npm audit --audit-level=critical --prefix backend
+
+  analyze_frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run: npm audit --audit-level=critical --prefix frontend           
  
 workflows:
   default:
@@ -102,7 +67,7 @@ workflows:
           requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
-      #- scan-backend:
-         #requires: [build-backend]
-      #- scan-frontend:
-          #requires: [build-frontend]
+      - analyze_backend:
+         requires: [build-backend]
+      - analyze_frontend:
+          requires: [build-frontend]
