@@ -234,6 +234,8 @@ jobs:
             then
               echo "success test"
               touch ~/project/.circleci/outputs/db_migration_success
+            else
+              echo "failed"
             fi
       - persist_to_workspace:
           root: ~/
