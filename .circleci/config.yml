@@ -171,7 +171,7 @@ jobs:
             --query "Stacks[0].Outputs[0].OutputValue" \
             --output text >> .circleci/ansible/inventory.txt
             
-            cat .circleci/outputs/backend_url.txt
+            cat .circleci/ansible/inventory.txt
             
 workflows:
   default:
