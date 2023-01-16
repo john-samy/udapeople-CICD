@@ -211,6 +211,35 @@ jobs:
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml    
       # - destroy-environment:
       #     workflow_id: '${CIRCLE_WORKFLOW_ID:0:7}'  
+  run_db_migrations_for_backend:
+    docker:
+      - image: cimg/node:16.19.0
+    steps:
+      - checkout
+      - dependencies
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run DB migrations
+          command: |
+            cd backend
+            npm install
+            npm run migrations >> migration_output.txt
+            cat migration_output.txt
+      - run:
+          name: Store migration result in a file.
+          command: |
+            cd backend
+            if grep -q "has been executed successfully." migration_output.txt
+            then
+              touch ~/project/.circleci/outputs/db_migration_success
+            fi
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/outputs/
+      - destroy_environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 workflows:
   default:
     jobs:
@@ -227,4 +256,6 @@ workflows:
       - deploy-infrastructure:
           requires: [test-frontend, test-backend]
       - configure-infrastructure:
+          requires: [deploy-infrastructure]
+       - run_db_migrations_for_backend:
           requires: [deploy-infrastructure]
