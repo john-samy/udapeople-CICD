@@ -50,7 +50,7 @@ commands:
 jobs:
   build-frontend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -68,7 +68,7 @@ jobs:
 
   build-backend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -84,7 +84,7 @@ jobs:
           key: backend-build
   test-frontend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -99,7 +99,7 @@ jobs:
 
   test-backend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -112,7 +112,7 @@ jobs:
             npm test
   scan-frontend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -128,7 +128,7 @@ jobs:
 
   scan-backend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -256,9 +256,9 @@ workflows:
          requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run_db_migrations_for_backend:
-          requires: [deploy-infrastructure]
+     #- deploy-infrastructure:
+     #    requires: [test-frontend, test-backend]
+     #- configure-infrastructure:
+     #    requires: [deploy-infrastructure]
+     #- run_db_migrations_for_backend:
+     #    requires: [deploy-infrastructure]
