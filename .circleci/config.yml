@@ -50,7 +50,7 @@ commands:
 jobs:
   build-frontend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -68,7 +68,7 @@ jobs:
 
   build-backend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -84,7 +84,7 @@ jobs:
           key: backend-build
   test-frontend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -99,7 +99,7 @@ jobs:
 
   test-backend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -112,7 +112,7 @@ jobs:
             npm test
   scan-frontend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -129,7 +129,7 @@ jobs:
 
   scan-backend:
     docker:
-      - image: cimg/node:16.19.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
       - restore_cache:
