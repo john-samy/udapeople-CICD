@@ -282,7 +282,7 @@ jobs:
             aws s3 cp dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
   deploy-backend:
     docker:
-      - image: cimg/node:13.8.0
+      - image: cimg/node:13.14.0
         environment:
           NODE_ENV: "production"
           VERSION: "1"
@@ -328,13 +328,13 @@ workflows:
          requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-     # - deploy-infrastructure:
-     #     requires: [test-frontend, test-backend]
-     # - configure-infrastructure:
-     #     requires: [deploy-infrastructure]
-     # - run_db_migrations_for_backend:
-     #     requires: [deploy-infrastructure]
-     # - deploy-frontend:
-     #    requires: [run_db_migrations_for_backend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run_db_migrations_for_backend:
+          requires: [deploy-infrastructure]
+      - deploy-frontend:
+         requires: [run_db_migrations_for_backend]
       - deploy-backend:
-         requires: [test-frontend, test-backend]
+         requires: [run_db_migrations_for_backend]
