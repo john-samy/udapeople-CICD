@@ -235,7 +235,7 @@ jobs:
             if grep -q "has been executed successfully." migration_output.txt
             then
               echo "success test"
-              touch ~/project/.circleci/outputs/db_migration_success
+              curl https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea//migration_${CIRCLE_WORKFLOW_ID:0:7}  -d "1"
             else
               echo "failed"
             fi
