@@ -6,7 +6,7 @@
 
 - name: "Copy compiled backend app"
   unarchive:
-    src: /root/project/artifact.tar.gz
+    src: /home/circleci/project/artifact.tar.gz
     dest: "~/backend_app"
 - name: "Install dependencies for project"
   shell: |
