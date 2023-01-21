@@ -21,8 +21,9 @@ commands:
   install_nodejs:
     steps:
       - run:
-        curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-        sudo apt-get install nodejs -y
+        command: |
+          curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+          sudo apt-get install nodejs -y
   destroy-environment:
     parameters:
       workflow_id:
