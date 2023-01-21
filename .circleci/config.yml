@@ -18,6 +18,11 @@ commands:
           command: |
             sudo add-apt-repository --yes --update ppa:ansible/ansible
             sudo apt install ansible -y
+  install_nodejs:
+    steps:
+      - run:
+        curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+        sudo apt-get install nodejs -y
   destroy-environment:
     parameters:
       workflow_id:
@@ -246,6 +251,34 @@ jobs:
       #- destroy-environment:
       #    workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # test
+  deploy-frontend:
+    docker:
+      - image: cimg/node:13.14.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - build-frontend
+      - dependencies
+      - run:
+          name: Get backend url
+          command: |
+             BACKEND_IP=$(aws ec2 describe-instances \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --output text)
+             echo "$BACKEND_IP"
+             API_URL="http://${BACKEND_IP}:3030"
+             echo "API_URL=${API_URL}"
+             echo "API_URL=${API_URL}" >> frontend/.env
+      - run:
+          name: Deploy frontend objects
+          working_directory: ./frontend
+          command: |
+            npm i
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
 workflows:
   default:
     jobs:
@@ -265,3 +298,5 @@ workflows:
           requires: [deploy-infrastructure]
       - run_db_migrations_for_backend:
           requires: [deploy-infrastructure]
+      - deploy-frontend:
+         requires: [run_db_migrations_for_backend]
