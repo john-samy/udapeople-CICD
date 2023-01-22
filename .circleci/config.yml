@@ -22,7 +22,7 @@ commands:
     steps:
       - run:
         command: |
-          curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+          curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
           sudo apt-get install nodejs -y
   destroy-environment:
     parameters:
@@ -153,7 +153,8 @@ jobs:
             npm audit --audit-level=critical         
   deploy-infrastructure:
     docker:
-      - image: cimg/base:2021.04
+      #- image: cimg/base:2021.04
+      - image: cimg/base:stable
     steps:
       - checkout
       - dependencies
@@ -194,7 +195,8 @@ jobs:
     #      workflow_id: '${CIRCLE_WORKFLOW_ID:0:7}'
   configure-infrastructure:
     docker:
-      - image: cimg/base:2021.04
+      #- image: cimg/base:2021.04
+      - image: cimg/base:stable
         environment:
           NODE_ENV: "production"
           VERSION: "1"
@@ -257,13 +259,15 @@ jobs:
       # test
   deploy-frontend:
     docker:
-      - image: cimg/node:13.14.0
+      #- image: cimg/node:13.14.0
+      - image: cimg/base:stable
     steps:
       - checkout
       - restore_cache:
           keys:
             - frontend-build
       - dependencies
+      - install_nodejs
       - run:
           name: Get backend url
           command: |
@@ -285,7 +289,8 @@ jobs:
             aws s3 cp dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
   deploy-backend:
     docker:
-      - image: cimg/node:13.14.0
+      - image: cimg/base:stable 
+      #image: cimg/node:13.14.0
         environment:
           NODE_ENV: "production"
           VERSION: "1"
@@ -307,6 +312,7 @@ jobs:
           keys:
             - backend-build
       - dependencies
+      - install_nodejs
       - run:
           name: Deploy backend
           command: |
@@ -334,13 +340,13 @@ workflows:
          requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-      #- deploy-infrastructure:
-      #    requires: [test-frontend, test-backend]
-      #- configure-infrastructure:
-      #    requires: [deploy-infrastructure]
-      #- run_db_migrations_for_backend:
-      #    requires: [deploy-infrastructure]
-      #- deploy-frontend:
-      #   requires: [run_db_migrations_for_backend]
-      #- deploy-backend:
-      #   requires: [run_db_migrations_for_backend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run_db_migrations_for_backend:
+          requires: [deploy-infrastructure]
+      - deploy-frontend:
+         requires: [run_db_migrations_for_backend]
+      - deploy-backend:
+         requires: [run_db_migrations_for_backend]
