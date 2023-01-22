@@ -267,7 +267,7 @@ jobs:
           keys:
             - frontend-build
       - dependencies
-      - install-nodejs
+      #- install-nodejs
       - run:
           name: Get backend url
           command: |
@@ -311,7 +311,7 @@ jobs:
           keys:
             - backend-build
       - dependencies
-      - install-nodejs
+      #- install-nodejs
       - run:
           name: Deploy backend
           command: |
