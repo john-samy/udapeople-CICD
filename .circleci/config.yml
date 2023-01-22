@@ -263,11 +263,11 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
+      - dependencies
+      - install-nodejs
       - restore_cache:
           keys:
             - frontend-build
-      - dependencies
-      #- install-nodejs
       - run:
           name: Get backend url
           command: |
@@ -303,6 +303,8 @@ jobs:
           TYPEORM_ENTITIES: $TYPEORM_ENTITIES       
     steps:
       - checkout
+      - dependencies
+      - install-nodejs
       - add_ssh_keys:
           fingerprints: ["e5:d1:8c:87:e9:f8:a9:bf:e8:0a:eb:7c:04:6e:70:c9"]
       - attach_workspace: 
@@ -310,8 +312,6 @@ jobs:
       - restore_cache:
           keys:
             - backend-build
-      - dependencies
-      #- install-nodejs
       - run:
           name: Deploy backend
           command: |
