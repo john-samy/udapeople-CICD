@@ -337,7 +337,7 @@ workflows:
       - test-backend:
           requires: [build-backend]
       - scan-backend:
-         requires: [build-backend]
+          requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
       - deploy-infrastructure:
@@ -347,6 +347,6 @@ workflows:
       - run_db_migrations_for_backend:
           requires: [deploy-infrastructure]
       - deploy-frontend:
-         requires: [run_db_migrations_for_backend]
+          requires: [run_db_migrations_for_backend]
       - deploy-backend:
-         requires: [run_db_migrations_for_backend]
+          requires: [run_db_migrations_for_backend]
