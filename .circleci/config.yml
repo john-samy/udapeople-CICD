@@ -347,5 +347,5 @@ workflows:
           requires: [deploy-infrastructure]
       - deploy-frontend:
           requires: [run_db_migrations_for_backend]
-      - deploy-backend:
-          requires: [run_db_migrations_for_backend]
+      #- deploy-backend:
+      #    requires: [run_db_migrations_for_backend]
