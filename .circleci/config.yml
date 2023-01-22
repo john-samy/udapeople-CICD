@@ -318,8 +318,8 @@ jobs:
             cd backend
             npm install
             npm run build
+            tar -czvf ~/project/artifact.tar.gz dist/* package*
             cd ..
-            tar -C backend -czvf ~/project/artifact.tar.gz .
             pwd
             #tar -ztvf ~/project/artifact.tar.gz
             cat ~/project/.circleci/ansible/inventory.txt
@@ -348,4 +348,4 @@ workflows:
       - deploy-frontend:
           requires: [run_db_migrations_for_backend]
       - deploy-backend:
-          requires: [run_db_migrations_for_backend]
+          requires: [configure-infrastructure, run_db_migrations_for_backend]
