@@ -350,7 +350,7 @@ jobs:
              else
               exit1
              fi
-   smoke-test-frontend:
+  smoke-test-frontend:
     docker:
       - image: cimg/base:stable
     steps:
