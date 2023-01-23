@@ -27,7 +27,7 @@ commands:
             then
               cd ~/project/backend
               npm install
-              npm run migration:revert
+              npm run migrations:revert
             fi
   notify:
     description: send notification to your Slack workspace when a job fails
@@ -480,8 +480,8 @@ workflows:
       #- run-migrations:
       #    requires: [configure-infrastructure]
       - deploy-frontend:
-          requires: [run-migrations]
+          requires: [configure-infrastructure]
       - deploy-backend:
-          requires: [run-migrations]
+          requires: [configure-infrastructure]
       - smoke-test:
           requires: [deploy-frontend, deploy-backend]
