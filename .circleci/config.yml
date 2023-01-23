@@ -327,7 +327,49 @@ jobs:
             cat ~/project/.circleci/ansible/inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=False
             ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/deploy-backend.yml
+            echo $TYPEORM_DATABASE
       # - destroy-environment:
+  smoke-test-backend:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - dependencies
+      - install-nodejs
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Backend smoke test
+          command: |
+             BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+             export API_URL="http://${BACKEND_IP}:3030"
+             curl -s $API_URL/api/status
+             if curl $API_URL/api/status |grep "ok"
+             then
+              exit 0
+             else
+              exit1
+             fi
+   smoke-test-frontend:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - dependencies
+      - install-nodejs
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Smoke test for front end
+          command: |
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com"             
+            echo ${URL} 
+            if curl -s ${URL} | grep "Welcome"
+            then
+              exit 0
+            else
+              exit 1
+            fi    
 workflows:
   default:
     jobs:
@@ -351,3 +393,7 @@ workflows:
           requires: [run_db_migrations_for_backend]
       - deploy-backend:
           requires: [configure-infrastructure, run_db_migrations_for_backend]
+      - smoke-test-backend:
+          requires: [deploy-backend]
+      - smoke-test-frontend:
+          requires: [deploy-frontend]
