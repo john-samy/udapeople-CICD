@@ -322,8 +322,8 @@ jobs:
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
             export TYPEORM_MIGRATIONS=./migrations/*.ts
             cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
+            echo $TYPEORM_ENTITIES
             ansible-playbook -i inventory.txt deploy-backend.yml
             
       # Here's where you will add some code to rollback on failure  
@@ -477,8 +477,8 @@ workflows:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]   #should require all scan jobs to be done successfull
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      #- run-migrations:
-      #    requires: [configure-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [configure-infrastructure]
       - deploy-backend:
