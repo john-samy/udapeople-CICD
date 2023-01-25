@@ -13,11 +13,11 @@ commands:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
-      #- run:
-      #    name: Installing ansible
-      #    command: |
-      #      sudo add-apt-repository --yes --update ppa:ansible/ansible
-      #      sudo apt install ansible -y
+      - run:
+          name: Installing ansible
+          command: |
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
   #install node jss
   install-nodejs:
     steps:
@@ -391,7 +391,7 @@ jobs:
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
                     --no-paginate --output text)
             echo OldWorkflowID: "${OldWorkflowID}"
-            echo Current_CIRCLE_WORKFLOW_ID: "9c225af"
+            echo Current_CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
             echo $OldWorkflowID > ~/OldWorkflowID.txt
            
             curl https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/OldWorkflowID  -d "${OldWorkflowID}"
@@ -406,7 +406,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name mycloudfront \
-              --parameter-overrides WorkflowID="9c225af" \
+              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
             cat ~/OldWorkflowID.txt
       #- destroy-environment
@@ -427,7 +427,7 @@ jobs:
             #OldWorkflowID=$(cat OldWorkflowID.txt)
             OldWorkflowID=$(curl --insecure https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/OldWorkflowID )
             echo OldWorkflowID: "${OldWorkflowID}"
-            echo Current_CIRCLE_WORKFLOW_ID: "9c225af"
+            echo Current_CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
          
             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
                     --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
@@ -446,30 +446,31 @@ jobs:
 workflows:
   default:
     jobs:
-     #- build-frontend
-     #- build-backend
-     #- test-frontend:
-     #    requires: [build-frontend]
-     #- test-backend:
-     #    requires: [build-backend]
-     #- scan-backend:
-     #    requires: [build-backend]
-     #- scan-frontend:
-     #    requires: [build-frontend]
-     #- deploy-infrastructure:
-     #    requires: [test-frontend, test-backend]
-     #- configure-infrastructure:
-     #    requires: [deploy-infrastructure]
-     #- run_db_migrations_for_backend:
-     #    requires: [deploy-infrastructure]
-     #- deploy-frontend:
-     #    requires: [run_db_migrations_for_backend]
-     #- deploy-backend:
-     #    requires: [configure-infrastructure, run_db_migrations_for_backend]
-     #- smoke-test-backend:
-     #    requires: [deploy-backend]
-     #- smoke-test-frontend:
-     #    requires: [deploy-frontend]
-      - cloudfront-update
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run_db_migrations_for_backend:
+          requires: [deploy-infrastructure]
+      - deploy-frontend:
+          requires: [run_db_migrations_for_backend]
+      - deploy-backend:
+          requires: [configure-infrastructure, run_db_migrations_for_backend]
+      - smoke-test-backend:
+          requires: [deploy-backend]
+      - smoke-test-frontend:
+          requires: [deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test-frontend]
       - cleanup:
           requires: [cloudfront-update]
