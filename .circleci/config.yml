@@ -398,7 +398,7 @@ jobs:
             echo Current_CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
             echo $OldWorkflowID > ~/OldWorkflowID.txt
            
-            curl https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/OldWorkflowID  -d "${OldWorkflowID}"
+            curl https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/OldWorkflowID_${CIRCLE_WORKFLOW_ID:0:7}  -d "${OldWorkflowID}"
       - persist_to_workspace:
           root: ~/
           paths:
@@ -429,7 +429,7 @@ jobs:
           name: Remove old stack
           command: |
             #OldWorkflowID=$(cat OldWorkflowID.txt)
-            OldWorkflowID=$(curl --insecure https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/OldWorkflowID )
+            OldWorkflowID=$(curl --insecure https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/OldWorkflowID_${CIRCLE_WORKFLOW_ID:0:7} )
             echo OldWorkflowID: "${OldWorkflowID}"
             echo Current_CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
          
@@ -445,8 +445,8 @@ jobs:
             else
               echo "------------------ Nothing to Delete/Can't Delete ------------------"  
             fi
-      #- destroy-environment
-      #- revert-migrations            
+      - destroy-environment
+      - revert-migrations            
 workflows:
   default:
     jobs:
