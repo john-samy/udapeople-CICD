@@ -34,11 +34,12 @@ commands:
           name: Destroying environment
           when: on_fail
           command: |
+            aws s3 rm "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
             aws cloudformation delete-stack \
-              --stack-name "udapeople-frontend-73bba8d"
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
             aws cloudformation delete-stack \
-              --stack-name "udapeople-backend-73bba8d"
-            aws s3 rm "s3://udapeople-73bba8d" --recursive
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+            
   revert-migrations:
     #parameters:
     #  workflow_id:
@@ -49,7 +50,7 @@ commands:
           when: on_fail
           command: |
             #${CIRCLE_WORKFLOW_ID:0:7}
-            SUCCESS=$(curl --insecure  https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/migration_73bba8d)
+            SUCCESS=$(curl --insecure  https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if (($SUCCESS == 1)); then
               cd backend
               npm install
