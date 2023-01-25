@@ -371,13 +371,16 @@ jobs:
           name: Smoke test for front end
           command: |
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-${AWS_DEFAULT_REGION}.amazonaws.com"             
-            echo ${URL} 
+            #echo ${URL} 
             if curl -s ${URL} | grep "Wellcome"
             then
               exit 0
             else
               exit 1
             fi  
+      - destroy-environment:
+          workflow_id: "73bba8d"
+      - revert-migrations
   cloudfront-update:
     docker:
       - image: cimg/base:stable
