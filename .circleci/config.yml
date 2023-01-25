@@ -458,6 +458,9 @@ workflows:
           requires: [build-frontend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend]
+          filters:
+            branches:
+              only: main
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run_db_migrations_for_backend:
