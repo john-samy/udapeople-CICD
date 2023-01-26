@@ -34,6 +34,7 @@ commands:
           name: Destroying environment
           when: on_fail
           command: |
+																			
             aws cloudformation delete-stack \
               --stack-name "udapeople-frontend-<< parameters.workflow_id >>"
             aws cloudformation delete-stack \
@@ -48,6 +49,7 @@ commands:
           name: Reverting migrations
           when: on_fail
           command: |
+									  
             SUCCESS=$(curl --insecure  https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if (($SUCCESS == 1)); then
               cd backend
@@ -378,6 +380,8 @@ jobs:
             else
               exit 1
             fi  
+						   
+						 
   cloudfront-update:
     docker:
       - image: cimg/base:stable
@@ -473,7 +477,7 @@ workflows:
           requires: [deploy-backend]
       - smoke-test-frontend:
           requires: [deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test-frontend]
-      - cleanup:
-          requires: [cloudfront-update]
+     #- cloudfront-update:
+     #    requires: [smoke-test-frontend]
+     #- cleanup:
+     #    requires: [cloudfront-update]
