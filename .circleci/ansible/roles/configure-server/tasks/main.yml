@@ -4,6 +4,9 @@
     name: "*"
     state: latest
     update_cache: yes
+- name: "upgrade packages"
+  apt:
+    upgrade: yes
 
 - name: Install Node.js
   apt:
@@ -19,3 +22,5 @@
   npm:
     name: pm2
     global: yes
+    production: yes
+    state: present
