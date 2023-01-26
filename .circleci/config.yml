@@ -49,7 +49,7 @@ commands:
           name: Reverting migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl --insecure  https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/migration_${CIRCLE_WORKFLOW_ID:0:7})
+            SUCCESS=$(curl --insecure  https://kvdb.io/CbTJ1rwS2oDYq3KRWcdvRj/migration_${CIRCLE_WORKFLOW_ID:0:7})
             if (($SUCCESS == 1)); then
               cd backend
               npm install
@@ -248,7 +248,7 @@ jobs:
             if grep -q "has been executed successfully." migration_output.txt
             then
               echo "success test"
-              curl https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d "1"
+              curl https://kvdb.io/CbTJ1rwS2oDYq3KRWcdvRj/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d "1"
             else
               echo "failed"
             fi
@@ -395,7 +395,7 @@ jobs:
             echo Current_CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
             echo $OldWorkflowID > ~/OldWorkflowID.txt
            
-            curl https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/OldWorkflowID  -d "${OldWorkflowID}"
+            curl https://kvdb.io/CbTJ1rwS2oDYq3KRWcdvRj/OldWorkflowID  -d "${OldWorkflowID}"
       - persist_to_workspace:
           root: ~/
           paths:
@@ -426,7 +426,7 @@ jobs:
           name: Remove old stack
           command: |
             #OldWorkflowID=$(cat OldWorkflowID.txt)
-            OldWorkflowID=$(curl --insecure https://kvdb.io/KyCrPTqNGWhQgxm1Jb3fea/OldWorkflowID )
+            OldWorkflowID=$(curl --insecure https://kvdb.io/CbTJ1rwS2oDYq3KRWcdvRj/OldWorkflowID )
             echo OldWorkflowID: "${OldWorkflowID}"
             echo Current_CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
          
