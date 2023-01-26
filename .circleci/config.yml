@@ -181,26 +181,33 @@ jobs:
 
   configure-infrastructure:
     docker:
-      - image: python:3.9-alpine3.16
+      #- image: cimg/base:2021.04
+      - image: cimg/base:stable
+        environment:
+          NODE_ENV: "production"
+          VERSION: "1"
+          ENVIRONMENT: "production"
+          TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+          TYPEORM_HOST: $TYPEORM_HOST
+          TYPEORM_USERNAME: $TYPEORM_USERNAME
+          TYPEORM_PASSWORD: $TYPEORM_PASSWORD
+          TYPEORM_DATABASE: $TYPEORM_DATABASE
+          TYPEORM_PORT: $TYPEORM_PORT
+          TYPEORM_ENTITIES: $TYPEORM_ENTITIES
     steps:
       - checkout
+      - dependencies
+      # Add ssh keys with fingerprint
       - add_ssh_keys:
-          fingerprints: 
-            - "f2:19:8c:a3:0a:30:7d:ef:3d:80:89:bb:ca:0a:e1:d7" 
+          fingerprints: ["e5:d1:8c:87:e9:f8:a9:bf:e8:0a:eb:7c:04:6e:70:c9"]
       - attach_workspace:
           at: ~/
       - run:
-          name: Install dependencies
+          name: Configure server
           command: |
-            apk add --no-cache tar gzip
-            pip install ansible awscli
-            apk add openssh-client
-              #alpine doesn't have ssh
-      - run:
-          name: Configure server and install the node_exporter for Prometheus
-          command: |
-            cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
+            cat ~/project/.circleci/ansible/inventory.txt
+            export ANSIBLE_HOST_KEY_CHECKING=False
+            ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml
       - destroy-environment      
 
   
@@ -284,7 +291,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: 
-            - "f2:19:8c:a3:0a:30:7d:ef:3d:80:89:bb:ca:0a:e1:d7" 
+            - "e5:d1:8c:87:e9:f8:a9:bf:e8:0a:eb:7c:04:6e:70:c9" 
       - attach_workspace:
           at: ~/
       - restore_cache:
