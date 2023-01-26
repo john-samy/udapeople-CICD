@@ -1,5 +1,6 @@
 version: 2.1
 commands:
+# install all aws-cli , rat , gzip, software-properties-common and installing ansible
   dependencies:
     steps:
       - run:
