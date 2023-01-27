@@ -27,9 +27,6 @@ commands:
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
             sudo apt-get install nodejs -y
   destroy-environment:
-    parameters:
-      workflow_id:
-        type: string
     steps:
       - run:
           name: Destroying environment
@@ -41,9 +38,6 @@ commands:
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
             aws s3 rm "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
   revert-migrations:
-    parameters:
-      workflow_id:
-        type: string
     steps:
       - run:
           name: Reverting migrations
