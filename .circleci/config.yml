@@ -427,6 +427,7 @@ jobs:
                    # --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
             #echo Stack names: "${STACKS[@]}"   
             aws s3 rm s3://udapeople-za4p81uil --recursive
+            aws s3api delete-bucket --bucket udapeople-za4p81uil
             echo "------------------ Deleting old Environments ------------------"
             #if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             #then
