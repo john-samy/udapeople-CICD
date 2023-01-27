@@ -212,7 +212,7 @@ jobs:
       - dependencies
       # Add ssh keys with fingerprint
       - add_ssh_keys:
-          fingerprints: ["e5:d1:8c:87:e9:f8:a9:bf:e8:0a:eb:7c:04:6e:70:c9"]
+          fingerprints: ["96:34:d8:e2:5b:a7:ff:5e:bb:74:f5:94:61:25:bd:81"]
       - attach_workspace:
           at: ~/
       - run:
@@ -307,7 +307,7 @@ jobs:
       - dependencies
       - install-nodejs
       - add_ssh_keys:
-          fingerprints: ["e5:d1:8c:87:e9:f8:a9:bf:e8:0a:eb:7c:04:6e:70:c9"]
+          fingerprints: ["96:34:d8:e2:5b:a7:ff:5e:bb:74:f5:94:61:25:bd:81"]
       - attach_workspace: 
           at: ~/
       - restore_cache:
