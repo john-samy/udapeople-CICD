@@ -1,7 +1,7 @@
 ---
 
 - name: "configuration play." 
-  hosts: web
+  hosts: all
   user: ubuntu
   become: true
   become_method: sudo
@@ -14,14 +14,20 @@
 
   pre_tasks:
     - name: "wait 600 seconds for target connection to become reachable/usable."
-      pause:
-        seconds: 120     # 120 seconds is enough
+      wait_for_connection:
+        delay: 60
+        timeout: 600    
 
-    - name: Install Python
-      package:
-        name: python3
+    - name: "install python for Ansible."
+      become: yes
+      apt:
+        name: "python3-pip"
+        update_cache: yes
         state: present
-
+    - name: 'Wait port 22 to become reachable/usable.'
+      wait_for:
+        port: 22
+        delay: 10
 
   # Get the environment variables from CircleCI and add to the EC2 instance
   environment:
@@ -34,6 +40,8 @@
     - TYPEORM_DATABASE: "{{ lookup('env', 'TYPEORM_DATABASE')}}"
     - TYPEORM_MIGRATIONS: "{{ lookup('env', 'TYPEORM_MIGRATIONS')}}"
     - TYPEORM_MIGRATIONS_DIR: "{{ lookup('env', 'TYPEORM_MIGRATIONS_DIR')}}"
+
+
   roles:
     - configure-server
     - configure-prometheus-node-exporter
